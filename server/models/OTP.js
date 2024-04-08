@@ -11,11 +11,10 @@ const OTPSchema = new mongoose.Schema({
         required: true,
     },
     createdAt:{
-        type: Date,
-        default: Date.now(),
+        type: Date
     }
 })
-
+OTPSchema.index({ createdAt: 1 }, { expireAfterSeconds: 300 });
 async function sendVerificationMail(email,otp){
     try{
         const mailResponse = await mailSender(email,"Verification Email from StudyNotion",otpTemplate(otp) );

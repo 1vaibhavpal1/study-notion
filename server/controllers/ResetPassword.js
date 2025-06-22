@@ -27,7 +27,7 @@ module.exports.resetPasswordToken = async function resetPasswordToken(req,res){
     // console.log("UpdatedUser =>" ,updatedUser);
 
     //createURL
-    const url = `http://localhost:3000/update-password/${token}`
+    const url = `https://study-notion-vaibhav.vercel.app/update-password/${token}`
     //send mail containing url
     await mailSender(email, "Password Reset Link", `Password Reset Link ${url}`)
 

@@ -37,7 +37,6 @@ const courseSchema = new mongoose.Schema({
     ],
     thumbnail:{
         type: String,
-        required: true,
     },
     tag:{
         type: [String],

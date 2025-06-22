@@ -10,6 +10,39 @@ import { markLectureAsComplete } from "../../../services/operations/courseDetail
 import { updateCompletedLectures } from "../../../slices/viewCourseSlice"
 import IconBtn from "../../common/IconBtn"
 
+// Helper function to check if URL is a YouTube link
+const isYouTubeUrl = (url) => {
+    if (!url) return false;
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
+    return youtubeRegex.test(url);
+};
+
+// Helper function to convert YouTube URL to embed URL
+const getYouTubeEmbedUrl = (url) => {
+    if (!url) return "";
+    
+    // Handle youtu.be links
+    if (url.includes('youtu.be/')) {
+        const videoId = url.split('youtu.be/')[1];
+        return `https://www.youtube.com/embed/${videoId}`;
+    }
+    
+    // Handle youtube.com links
+    if (url.includes('youtube.com/watch?v=')) {
+        const videoId = url.split('v=')[1];
+        // Remove any additional parameters
+        const cleanVideoId = videoId.split('&')[0];
+        return `https://www.youtube.com/embed/${cleanVideoId}`;
+    }
+    
+    // Handle youtube.com/embed links (already in correct format)
+    if (url.includes('youtube.com/embed/')) {
+        return url;
+    }
+    
+    return url;
+};
+
 const VideoDetails = () => {
   const { courseId, sectionId, subSectionId } = useParams()
   const navigate = useNavigate()
@@ -168,6 +201,10 @@ const VideoDetails = () => {
     setLoading(false)
   }
 
+  // Check if the video URL is a YouTube link
+  const isYouTube = isYouTubeUrl(videoData?.videoUrl);
+  const youtubeEmbedUrl = getYouTubeEmbedUrl(videoData?.videoUrl);
+
   return (
     <div className="flex flex-col gap-5 text-white">
       {!videoData ? (
@@ -176,6 +213,64 @@ const VideoDetails = () => {
           alt="Preview"
           className="h-full w-full rounded-md object-cover"
         />
+      ) : isYouTube ? (
+        <div className="relative">
+          <iframe
+            src={youtubeEmbedUrl}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="h-96 w-full rounded-md"
+          ></iframe>
+          {/* Render When Video Ends - For YouTube, we'll show completion options */}
+          {videoEnded && (
+            <div
+              style={{
+                backgroundImage:
+                  "linear-gradient(to top, rgb(0, 0, 0), rgba(0,0,0,0.7), rgba(0,0,0,0.5), rgba(0,0,0,0.1)",
+              }}
+              className="absolute inset-0 z-[100] grid h-full place-content-center font-inter"
+            >
+              {!completedLectures.includes(subSectionId) && (
+                <IconBtn
+                  disabled={loading}
+                  onclick={() => handleLectureCompletion()}
+                  text={!loading ? "Mark As Completed" : "Loading..."}
+                  customClasses="text-xl max-w-max px-4 mx-auto"
+                />
+              )}
+              <IconBtn
+                disabled={loading}
+                onclick={() => {
+                  setVideoEnded(false)
+                }}
+                text="Rewatch"
+                customClasses="text-xl max-w-max px-4 mx-auto mt-2"
+              />
+              <div className="mt-10 flex min-w-[250px] justify-center gap-x-4 text-xl">
+                {!isFirstVideo() && (
+                  <button
+                    disabled={loading}
+                    onClick={goToPrevVideo}
+                    className="blackButton"
+                  >
+                    Prev
+                  </button>
+                )}
+                {!isLastVideo() && (
+                  <button
+                    disabled={loading}
+                    onClick={goToNextVideo}
+                    className="blackButton"
+                  >
+                    Next
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       ) : (
         <Player
           ref={playerRef}

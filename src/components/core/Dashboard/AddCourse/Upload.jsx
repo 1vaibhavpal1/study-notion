@@ -6,6 +6,38 @@ import { useSelector } from "react-redux"
 import "video-react/dist/video-react.css"
 import { Player } from "video-react"
 
+// Helper function to check if URL is a YouTube link
+const isYouTubeUrl = (url) => {
+    if (!url) return false;
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
+    return youtubeRegex.test(url);
+};
+
+// Helper function to convert YouTube URL to embed URL
+const getYouTubeEmbedUrl = (url) => {
+    if (!url) return "";
+    
+    // Handle youtu.be links
+    if (url.includes('youtu.be/')) {
+        const videoId = url.split('youtu.be/')[1];
+        return `https://www.youtube.com/embed/${videoId}`;
+    }
+    
+    // Handle youtube.com links
+    if (url.includes('youtube.com/watch?v=')) {
+        const videoId = url.split('v=')[1];
+        // Remove any additional parameters
+        const cleanVideoId = videoId.split('&')[0];
+        return `https://www.youtube.com/embed/${cleanVideoId}`;
+    }
+    
+    // Handle youtube.com/embed links (already in correct format)
+    if (url.includes('youtube.com/embed/')) {
+        return url;
+    }
+    
+    return url;
+};
 
 export default function Upload({ name, label, register, setValue, errors, video = false, viewData = null, editData = null }) {
     const course = useSelector((state) => state.course)
@@ -47,6 +79,9 @@ export default function Upload({ name, label, register, setValue, errors, video 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedFile, setValue])
 
+    // Check if the preview source is a YouTube URL
+    const isYouTube = isYouTubeUrl(previewSource);
+    const youtubeEmbedUrl = getYouTubeEmbedUrl(previewSource);
 
     return (
         <div className="flex flex-col space-y-2">
@@ -65,6 +100,17 @@ export default function Upload({ name, label, register, setValue, errors, video 
                                 alt="Preview"
                                 className="h-full w-full rounded-md object-cover"
                             />
+                        ) : isYouTube ? (
+                            <div className="w-full">
+                                <iframe
+                                    src={youtubeEmbedUrl}
+                                    title="YouTube video player"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                    className="h-64 w-full rounded-md"
+                                ></iframe>
+                            </div>
                         ) : (
                             <Player aspectRatio="16:9" playsInline src={previewSource} />
                         )}

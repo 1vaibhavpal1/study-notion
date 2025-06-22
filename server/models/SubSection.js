@@ -13,6 +13,22 @@ const subSectionSchema = new mongoose.Schema({
     },
     videoUrl:{
         type: String,
+    },
+    learningObjectives: {
+        type: [String],
+        default: []
+    },
+    keyPoints: {
+        type: [String],
+        default: []
+    },
+    examples: {
+        type: [String],
+        default: []
+    },
+    practiceExercises: {
+        type: [String],
+        default: []
     }
 })
 

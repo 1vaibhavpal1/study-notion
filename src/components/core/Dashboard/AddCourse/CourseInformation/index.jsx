@@ -66,7 +66,7 @@ function CourseInformation() {
             currentValues.coursePrice !== course.price ||
             currentValues.courseTags.toString() !== course.tag.toString() ||
             currentValues.courseBenefits !== course.whatWillYouLearn ||
-            currentValues.courseCategory._id !== course.category._id ||
+            (course.category === null || currentValues.courseCategory._id !== course.category?._id) ||
             currentValues.courseRequirements.toString() !==
             course.instructions.toString() ||
             currentValues.courseImage !== course.thumbnail
@@ -103,7 +103,7 @@ function CourseInformation() {
                 if (currentValues.courseBenefits !== course.whatWillYouLearn) {
                     formData.append("whatWillYouLearn", data.courseBenefits)
                 }
-                if (currentValues.courseCategory._id !== course.category._id) {
+                if (course.category==null ||currentValues.courseCategory._id !== course.category?._id) {
                     formData.append("category", data.courseCategory)
                 }
                 if (

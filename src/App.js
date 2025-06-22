@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import Cart from "./components/core/Cart/index"
 import { ACCOUNT_TYPE } from './utils/constants'
 import AddCourse from "./components/core/Dashboard/AddCourse/index"
+import GenerateCourse from "./components/core/Dashboard/GenerateCourse/index"
 
 import Contact from './pages/Contact';
 import Dashboard from './pages/Dashboards';
@@ -102,6 +103,7 @@ function App() {
                             <>
                             <Route path="dashboard/instructor" element={<Instructor/>}/>
                             <Route path="dashboard/add-course" element={<AddCourse/>}/>
+                            <Route path="dashboard/generate-course" element={<GenerateCourse/>}/>
                             <Route path="dashboard/my-courses" element={<MyCourses/>} />
                             <Route path="dashboard/edit-course/:courseId" element={<EditCourse/>} />
                             </>

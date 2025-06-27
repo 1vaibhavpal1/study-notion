@@ -9,15 +9,26 @@ module.exports.auth = async function auth(req,res,next){
         // console.log("FGASFDASGSG === " ,req.cookies)
         // console.log(req.body)
 
-        const token = req.cookies.token || req.body.token || req.header("Authorization").replace("Bearer ", "");
+        let token = req.cookies?.token || 
+                     req.body?.token || 
+                     null;
 
-        if(!token){
-            return res.status(500).json({
+        // Check Authorization header
+        const authHeader = req.header("Authorization");
+        console.log("Auth Header:", authHeader);
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+            token = authHeader.replace("Bearer ", "");
+        }
+
+        console.log("TOKEN IS ===>> ",token)
+
+        if(!token || token === "null" || token === "undefined") {
+            return res.status(401).json({
                 success: false,
                 message: "Token is missing"
             });
         }
-        // console.log("TOKEN IS ===>> ",token)
+
         //verify
         try{
             const decode = await jwt.verify(token, process.env.JWT_SECRET);
@@ -26,33 +37,38 @@ module.exports.auth = async function auth(req,res,next){
             
         }
         catch(err){
-            console.log(err);
+            console.log("JWT Verification Error:", err);
             return res.status(401).json({
                 success: false,
-                message : "Something went wrong while validating the token",
+                message : "Invalid token",
             });
         }
         next();
     }
     catch(err){
+        console.log("Auth Middleware Error:", err);
         return res.status(500).json({
             success: false,
-            message: err.message
+            message: "Authentication failed"
         })
     }
 }
 //isStudent
 module.exports.isStudent = async function isStudent(req, res, next){
     try{
+        console.log("Checking isStudent middleware, user account type:", req.user?.accountType);
         if(req.user.accountType !== "Student"){
+            console.log("Access denied - not a student");
             return res.status(401).json({
                 success: false,
                 message: "This is a private route for student"
             });
         }
+        console.log("Student access granted");
         next();
     }
     catch(err){
+        console.log("Error in isStudent middleware:", err);
         return res.status(500).json({
             success: false,
             message:"User role cannot be verified, please try again"

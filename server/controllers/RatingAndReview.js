@@ -5,6 +5,10 @@ const mongoose = require('mongoose')
 //creating review
 module.exports.createRating = async function createRating(req, res) {
     try {
+        console.log("CREATE RATING REQUEST RECEIVED");
+        console.log("req.user:", req.user);
+        console.log("req.body:", req.body);
+        
         //fetching user id
         const userId = req.user.id;
 
@@ -14,7 +18,7 @@ module.exports.createRating = async function createRating(req, res) {
         //check if user is enrolled in course
         const courseDetails = await Course.findOne({
             _id: courseId,
-            studentsEnrolled: { $eleMatch: { $eq: userId } },
+            studentsEnrolled: { $elemMatch: { $eq: userId } },
         });
 
         if (!courseDetails) {
@@ -32,7 +36,7 @@ module.exports.createRating = async function createRating(req, res) {
         if (alreadyReviewed) {
             return res.status(401).json({
                 success: false,
-                message: "Course already reviewd"
+                message: "Course already reviewed"
             });
         }
 
@@ -54,11 +58,16 @@ module.exports.createRating = async function createRating(req, res) {
         return res.status(200).json({
             success: true,
             message: "Rating and Review created successfully",
-            RatingAndReview,
+            ratingReview,
         })
     }
     catch (err) {
-
+        console.log("Error in creating rating:", err);
+        return res.status(500).json({
+            success: false,
+            message: "Error in creating rating and review",
+            error: err.message
+        });
     }
 }
 
@@ -73,7 +82,9 @@ module.exports.getAverageRating = async function getAverageRating(req, res) {
             {
                 $match: {
                     course: new mongoose.Types.ObjectId(courseId)
-                },
+                }
+            },
+            {
                 $group: {
                     _id: null,
                     averageRating: { $avg: "$rating" },
@@ -107,7 +118,7 @@ module.exports.getAverageRating = async function getAverageRating(req, res) {
 //get all ratings and revies
 module.exports.getAllRating = async function getAllRating(req,res){
     try{
-        const allReviews = RatingAndReview.find({})
+        const allReviews = await RatingAndReview.find({})
                                           .sort({rating: -1})
                                           .populate({
                                             path: "user",
@@ -126,10 +137,10 @@ module.exports.getAllRating = async function getAllRating(req,res){
     }
     catch(err){
         console.log(err);
-        return res.status(200).json({
+        return res.status(500).json({
             success: false,
             message:"Error in fetching all ratings",
-            err: err.message
+            error: err.message
         })
     }
 } 

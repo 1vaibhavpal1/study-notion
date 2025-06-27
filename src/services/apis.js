@@ -1,4 +1,4 @@
-const BASE_URL = "https://study-notion-1-gph5.onrender.com/api/v1"
+const BASE_URL = "http://localhost:4000/api/v1"
 
 //AUTH ENDPPINTS
 export const endpoints = {
@@ -41,7 +41,7 @@ export const courseEndpoints = {
     UPDATE_SECTION_API: BASE_URL + "/course/updateSection",
     UPDATE_SUBSECTION_API: BASE_URL + "/course/updateSubSection",
     GET_ALL_INSTRUCTOR_COURSES_API: BASE_URL + "/course/getInstructorCourses",
-    DELETE_SECTION_API: BASE_URL + "/course//deleteSection",
+    DELETE_SECTION_API: BASE_URL + "/course/deleteSection",
     DELETE_SUBSECTION_API: BASE_URL + "/course/deleteSubSection",
     DELETE_COURSE_API: BASE_URL + "/course/deleteCourse",
     GET_FULL_COURSE_DETAILS_AUTHENTICATED:
@@ -60,5 +60,6 @@ export const studentEndpoints = {
     COURSE_PAYMENT_API: BASE_URL + "/payment/capturePayment",
     COURSE_VERIFY_API: BASE_URL + "/payment/verifyPayment",
     SEND_PAYMENT_SUCCESS_EMAIL_API: BASE_URL + "/payment/sendPaymentSuccessEmail",
+    GET_RAZORPAY_KEY_API: BASE_URL + "/payment/key",
   }
   

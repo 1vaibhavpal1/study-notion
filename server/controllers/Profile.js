@@ -196,9 +196,9 @@ module.exports.getEnrolledCourses = async function getEnrolledCourses(req, res) 
                 },
             })
             .exec()
-        console.log("Hello")
+        // console.log("Hello")
         userDetails = userDetails.toObject()
-        console.log("USERR DETAILS FROM BACKEND getEnrolledCoursesAPI ==>", userDetails)
+        // console.log("USERR DETAILS FROM BACKEND getEnrolledCoursesAPI ==>", userDetails)
         var SubsectionLength = 0
         for (var i = 0; i < userDetails.courses.length; i++) {
             let totalDurationInSeconds = 0
